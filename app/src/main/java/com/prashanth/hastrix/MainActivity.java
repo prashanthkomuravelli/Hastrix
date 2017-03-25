@@ -1,5 +1,6 @@
 package com.prashanth.hastrix;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.firebase.ui.auth.AuthUI;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -67,8 +70,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_signout) {
+            AuthUI.getInstance().signOut(this);
+            Intent in = new Intent(this,LoginActivity.class);
+            startActivity(in);
+            MainActivity.this.finish();
         }
 
         return super.onOptionsItemSelected(item);
