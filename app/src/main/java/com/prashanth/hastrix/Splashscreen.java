@@ -1,10 +1,13 @@
 package com.prashanth.hastrix;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
-public class Splashscreen extends AppCompatActivity {
+public class Splashscreen extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,15 +18,33 @@ public class Splashscreen extends AppCompatActivity {
             public void run()
             {
                 try {
-                    sleep(3500);
-                    Intent in=new Intent(getApplicationContext(),MainActivity.class);
-                    startActivity(in);
-                    finish();
+                    sleep(6500);
+                    if(networkConnectivity()==true) {
+                        Intent in = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(in);
+                        finish();
+                    }
+                    else
+                    {
+                        Intent notConnectedIntent = new Intent(getApplicationContext(),NotConnectedActivity.class);
+                        startActivity(notConnectedIntent);
+                        finish();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         };
         t.start();
+    }
+    private boolean networkConnectivity()
+    {
+        ConnectivityManager cm =
+                (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
     }
 }
