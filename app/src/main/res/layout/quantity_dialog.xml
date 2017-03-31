@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rvdialog"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="250dp">
+
+    <TextView
+        android:id="@+id/tvPnameDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_below="@+id/ivLogoDialog"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:textSize="20sp"
+        android:textColor="@color/colorPrimary"
+        android:fontFamily="serif"/>
+
+    <TextView
+        android:id="@+id/tvQuantityDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quantity"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:textColor="#000"
+        android:layout_below="@+id/tvPnameDialog"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:fontFamily="sans-serif"/>
+
+    <EditText
+        android:id="@+id/etQuantityDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvQuantityDialog"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="0"
+        android:ems="10"
+        android:cursorVisible="false"
+        android:inputType="number"
+        />
+
+    <ImageView
+        android:id="@+id/ivMinus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/minus_icon"
+        android:layout_alignTop="@+id/etQuantityDialog"
+        android:layout_toLeftOf="@+id/etQuantityDialog"
+        android:layout_toStartOf="@+id/etQuantityDialog" />
+
+    <ImageView
+        android:id="@+id/ivPlus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="1dp"
+        android:layout_marginStart="1dp"
+        app:srcCompat="@drawable/plus_icon"
+        android:layout_alignTop="@+id/etQuantityDialog"
+        android:layout_toRightOf="@+id/etQuantityDialog"
+        android:layout_toEndOf="@+id/etQuantityDialog" />
+
+    <ImageView
+        android:id="@+id/ivLogoDialog"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/logo"
+        />
+
+
+
+</RelativeLayout>
