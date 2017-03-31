@@ -34,4 +34,30 @@
     <string name="lbl_forgot_password">Forgot password?</string>
     <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
     <string name="signout">SIGNOUT</string>
+
+    <string-array name="ProductNames" >
+        <item>APP Based Control System</item>
+        <item>Voice Control System</item>
+        <item>Video Door Phone</item>
+        <item>Wi-fi Door Bell (Live Access on APP)</item>
+        <item>RFID Access Control System</item>
+        <item>Biometric Access Control System</item>
+        <item>Touch Panel Switches</item>
+        <item>Mood Lighting</item>
+        <item>Smart Curtain System</item>
+        <item>Smart Bathroom/Dresser</item>
+        <item>Smart Lighting sytem for Balcony</item>
+        <item>Indoor/outdoor W-fi Camera System</item>
+        <item>GSM Security Panel</item>
+        <item>Gas leakage sensor</item>
+        <item>Environment Sensor</item>
+        <item>Smart Bed Lighting</item>
+        <item>All Appliances control by Smart Phone from anywhere</item>
+        <item>Smart kitchen</item>
+        <item>Fire Alarm System</item>
+        <item>Smart Dustbin/trash can System</item>
+        <item>Smart water tank management system</item>
+        <item>Sliding Gate Automation system</item>
+    </string-array>
+
 </resources>
