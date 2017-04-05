@@ -10,6 +10,7 @@ public class SingleProductDetails {
     private int quantity;
     private float price;
 
+
     public SingleProductDetails(String productName, String quantityMsg, int quantity) {
         this.productName = productName;
         this.quantityMsg = quantityMsg;

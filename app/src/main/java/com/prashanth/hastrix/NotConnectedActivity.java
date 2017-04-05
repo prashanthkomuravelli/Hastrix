@@ -35,7 +35,7 @@ public class NotConnectedActivity extends AppCompatActivity {
     {
         if(networkConnectivity()==true)
         {
-            Intent main = new Intent(getApplicationContext(),MainActivity.class);//to do
+            Intent main = new Intent(getApplicationContext(),LoginActivity.class);//to do
             startActivity(main);
             finish();
         }
