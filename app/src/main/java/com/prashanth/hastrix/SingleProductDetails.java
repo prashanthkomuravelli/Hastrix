@@ -10,6 +10,16 @@ public class SingleProductDetails {
     private int quantity;
     private float price;
 
+    public float getNewPrice() {
+        return newPrice;
+    }
+
+    public void setNewPrice(float newPrice) {
+        this.newPrice = newPrice;
+    }
+
+    private float newPrice;
+
     public SingleProductDetails(String productName, String quantityMsg, int quantity) {
         this.productName = productName;
         this.quantityMsg = quantityMsg;

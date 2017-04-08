@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rvdialog"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="250dp">
+    android:layout_height="350dp">
 
     <TextView
         android:id="@+id/tvPnameDialog"
@@ -80,6 +80,34 @@
         android:background="@drawable/logo"
         />
 
+    <CheckBox
+        android:id="@+id/cbDialog"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="34dp"
+        android:text="New Price"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/etQuantityDialog"
+        android:layout_alignLeft="@+id/tvPnameDialog"
+        android:layout_alignStart="@+id/tvPnameDialog"
+        android:layout_marginLeft="23dp"
+        android:layout_marginStart="23dp" />
+
+    <EditText
+        android:id="@+id/etNewPriceDialog"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:ems="10"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:inputType="number"
+        android:visibility="invisible"
+        android:layout_marginRight="20dp"
+        android:text=""
+        android:layout_alignTop="@+id/cbDialog"
+        android:layout_alignRight="@+id/ivPlus"
+        android:layout_alignEnd="@+id/ivPlus" />
 
 
 </RelativeLayout>

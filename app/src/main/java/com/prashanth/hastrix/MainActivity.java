@@ -7,11 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import static java.lang.Integer.parseInt;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
         //implements NavigationView.OnNavigationItemSelectedListener
@@ -66,16 +69,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         final EditText etQuantityDialog = (EditText) view.findViewById(R.id.etQuantityDialog);
         ImageView ivPlusDialog = (ImageView) view.findViewById(R.id.ivPlus);
         ImageView ivMinusDialog = (ImageView) view.findViewById(R.id.ivMinus);
+        CheckBox cbDialog = (CheckBox) view.findViewById(R.id.cbDialog);
+        final EditText etNewPriceDialog = (EditText) view.findViewById(R.id.etNewPriceDialog);
 
         builder.setView(view).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                int num = Integer.parseInt(etQuantityDialog.getText().toString());
+                int num = parseInt(etQuantityDialog.getText().toString());
+                float newPrice = Float.parseFloat(etNewPriceDialog.getText().toString());
                 if(num>0) {
                     tvQuantMsg.setVisibility(View.VISIBLE);
                     tvQuant.setVisibility(View.VISIBLE);
                     tvQuant.setText(String.valueOf(num));
                     customListViewAdapter.list.get(index).setQuantity(num);
+                    if (newPrice > 0) {
+                        customListViewAdapter.list.get(index).setNewPrice(newPrice);
+                        Toast.makeText(getApplicationContext(), String.valueOf(customListViewAdapter.list.get(index).getNewPrice()), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -85,15 +95,33 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 tvQuantMsg.setVisibility(View.INVISIBLE);*/
                 tvQuant.setText(String.valueOf(0));
                 customListViewAdapter.list.get(index).setQuantity(0);
+                customListViewAdapter.list.get(index).setNewPrice(0);
+                Toast.makeText(getApplicationContext(), String.valueOf(customListViewAdapter.list.get(index).getNewPrice()), Toast.LENGTH_SHORT).show();
             }
         });
         tvPnameDialog.setText(customListViewAdapter.list.get(index).getProductName());
         etQuantityDialog.setText("0");
+        etNewPriceDialog.setText("0");
         builder.show();
+        cbDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    CheckBox i = (CheckBox)view;
+                if(i.isChecked()==true){
+                    etNewPriceDialog.setVisibility(View.VISIBLE);
+                    etNewPriceDialog.setText("");
+                }
+                else{
+                    etNewPriceDialog.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
+
         ivPlusDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int num = Integer.parseInt(etQuantityDialog.getText().toString());
+                int num = parseInt(etQuantityDialog.getText().toString());
                 if(num>=5)
                     Toast.makeText(getApplicationContext(),"Maximum Quantity Selected ",Toast.LENGTH_SHORT).show();
                 else {
@@ -105,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         ivMinusDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int num = Integer.parseInt(etQuantityDialog.getText().toString());
+                int num = parseInt(etQuantityDialog.getText().toString());
                 if(num==0)
                     Toast.makeText(getApplicationContext(),"Minimum Quantity Selected",Toast.LENGTH_SHORT).show();
                 else {
@@ -116,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         });
 
     }
+
     /*
     @Override
     public void onBackPressed() {
