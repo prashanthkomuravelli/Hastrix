@@ -20,7 +20,7 @@ public class Splashscreen extends Activity {
                 try {
                     sleep(3000);
                     if(networkConnectivity()==true) {
-                        Intent in = new Intent(getApplicationContext(), MainActivity.class);//to do
+                        Intent in = new Intent(getApplicationContext(), LoginActivity.class);//to do
                         startActivity(in);
                         finish();
                     }
