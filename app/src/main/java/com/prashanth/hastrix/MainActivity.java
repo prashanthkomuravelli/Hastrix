@@ -2,8 +2,12 @@ package com.prashanth.hastrix;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
@@ -36,21 +40,35 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.html.WebColors;
 import com.itextpdf.text.pdf.CMYKColor;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
         , NavigationView.OnNavigationItemSelectedListener
@@ -62,11 +80,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private DatabaseReference mDatabaseReference,mDatabaseReference1;
     private Firebase mRef;
     File myFile;
+
+    BaseColor myColor = WebColors.getRGBColor("#9E9E9E");
+    BaseColor myColor1 = WebColors.getRGBColor("#757575");
     //ArrayList<Integer> total_costs;
     public int[] total_costs ;
+    public int[] costs;
     /*PdfDocument document = new PdfDocument();
     PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(100,100, 1).create();
     PdfDocument.Page page = document.startPage(pageInfo); */
+    private String path;
+    private Image bgImage;
+    private File dir;
+    private File file;
+    private PdfPCell cell;
 
 
 
@@ -88,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mDatabaseReference = mFirebaseDatabase.getReference().child("products");
         //total_costs = new ArrayList<Integer>();
         total_costs = new int[customListViewAdapter.productNames.length];
+        costs = new int[customListViewAdapter.productNames.length];
 
 
 
@@ -137,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             total_cost = customListViewAdapter.list.get(index).getQuantity() * Integer.parseInt(value);
                             Log.i("product total cost of "+customListViewAdapter.list.get(index).getProductName(),Integer.toString(total_cost));
                             total_costs[index]=total_cost;
+                            costs[index] = Integer.parseInt(value);
                             Log.i("Array value 1",Integer.toString(total_costs[index]));
                         }
 
@@ -248,8 +277,167 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         return true;
     }
 
-    public void placeOrder(View view){
+    public void placeOrder(View view) throws DocumentException {
+        while (costs[0]==0) {
+
+            
+        }
+
         String text = " ";
+
+        Document doc= new Document() ;
+        String outPath = Environment.getExternalStorageDirectory() + "/mypdf.pdf" ;
+        long total=0;
+        try {
+            PdfWriter.getInstance(doc,new FileOutputStream(outPath));
+            doc.open();
+            PdfPTable pt = new PdfPTable(2);
+            pt.setWidthPercentage(100);
+            float[] fl = new float[]{20, 80};
+            pt.setWidths(fl);
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            Drawable myImage = MainActivity.this.getResources().getDrawable(R.drawable.logo2);
+            Bitmap bitmap = ((BitmapDrawable) myImage).getBitmap();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] bitmapdata = stream.toByteArray();
+            bgImage = Image.getInstance(bitmapdata);
+            bgImage.setAbsolutePosition(330f, 642f);
+            cell.addElement(bgImage);
+            pt.addCell(cell);
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.addElement(new Paragraph("Hastrix Automation"));
+            cell.addElement(new Paragraph(""));
+            cell.addElement(new Paragraph(""));
+            pt.addCell(cell);
+            /*cell = new PdfPCell(new Paragraph(""));
+            cell.setBorder(Rectangle.NO_BORDER);
+            pt.addCell(cell); */
+
+            PdfPTable pTable = new PdfPTable(1);
+            pTable.setWidthPercentage(100);
+            cell = new PdfPCell();
+            cell.setColspan(1);
+            cell.addElement(pt);
+            pTable.addCell(cell);
+            PdfPTable table = new PdfPTable(5);
+
+            float[] columnWidth = new float[]{15,40,15,15,15};
+            table.setWidths(columnWidth);
+
+
+            cell = new PdfPCell();
+
+
+            cell.setBackgroundColor(myColor);
+            cell.setColspan(4);
+            cell.addElement(pTable);
+            table.addCell(cell);
+            cell = new PdfPCell(new Phrase(" "));
+            cell.setColspan(4);
+            table.addCell(cell);
+            cell = new PdfPCell();
+            cell.setColspan(4);
+
+            cell.setBackgroundColor(myColor1);
+
+            cell = new PdfPCell(new Phrase("#"));
+            cell.setBackgroundColor(myColor1);
+            table.addCell(cell);
+            cell = new PdfPCell(new Phrase("Product Name"));
+            cell.setBackgroundColor(myColor1);
+            table.addCell(cell);
+            cell = new PdfPCell(new Phrase("Quantity"));
+            cell.setBackgroundColor(myColor1);
+            table.addCell(cell);
+            cell = new PdfPCell(new Phrase("Price per item"));
+            cell.setBackgroundColor(myColor1);
+            table.addCell(cell);
+            cell = new PdfPCell(new Phrase("Price"));
+            cell.setBackgroundColor(myColor1);
+            table.addCell(cell);
+
+            //table.setHeaderRows(3);
+            cell = new PdfPCell();
+            cell.setColspan(5);
+
+           /* for (int i = 1; i <= 10; i++) {
+                table.addCell(String.valueOf(i));
+                table.addCell("Header 1 row " + i);
+                table.addCell("Header 2 row " + i);
+                table.addCell("Header 3 row " + i);
+                table.addCell("Header 4 row " + i);
+                table.addCell("Header 5 row " + i);
+
+            } */
+            for(int i=0;i<customListViewAdapter.productNames.length;i++) {
+                if(customListViewAdapter.list.get(i).getQuantity()!=0) {
+                    table.addCell(String.valueOf(i));
+                    table.addCell(customListViewAdapter.list.get(i).getProductName());
+                    table.addCell(Integer.toString(customListViewAdapter.list.get(i).getQuantity()));
+                    table.addCell(Integer.toString(costs[i]));
+                    table.addCell(Integer.toString(total_costs[i]));
+                    total=total+total_costs[i];
+                }
+                /*String str = customListViewAdapter.list.get(i).getProductName() + "  " +customListViewAdapter.list.get(i).getQuantity();
+                doc.add(new Paragraph(str+Integer.toString(total_costs[i]))); */
+            }
+
+            PdfPTable ftable = new PdfPTable(5);
+            ftable.setWidthPercentage(100);
+            float[] columnWidthaa = new float[]{15,40,15,15,15};
+            ftable.setWidths(columnWidthaa);
+            cell = new PdfPCell();
+            cell.setColspan(5);
+            cell.setBackgroundColor(myColor1);
+            cell = new PdfPCell(new Phrase("Total cost" ));
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.setBackgroundColor(myColor1);
+            ftable.addCell(cell);
+            cell = new PdfPCell(new Phrase(""));
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.setBackgroundColor(myColor1);
+            ftable.addCell(cell);
+            cell = new PdfPCell(new Phrase(""));
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.setBackgroundColor(myColor1);
+            ftable.addCell(cell);
+            cell = new PdfPCell(new Phrase(""));
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.setBackgroundColor(myColor1);
+            ftable.addCell(cell);
+            cell = new PdfPCell(new Phrase( String.valueOf(total)));
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.setBackgroundColor(myColor1);
+            ftable.addCell(cell);
+            /*cell = new PdfPCell(new Phrase(""));
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.setBackgroundColor(myColor1);
+            ftable.addCell(cell); */
+            cell = new PdfPCell(new Paragraph("Footer"));
+            cell.setColspan(5);
+            ftable.addCell(cell);
+            cell = new PdfPCell();
+            cell.setColspan(5);
+            cell.addElement(ftable);
+            table.addCell(cell);
+            doc.add(table);
+
+
+
+            doc.close();
+            Toast.makeText(this, "pdf created", Toast.LENGTH_SHORT).show();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         for(int i=0;i<customListViewAdapter.productNames.length;i++) {
             final int quantity;
@@ -262,72 +450,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
         }
+        File f = new File(outPath);
+        Uri URI = Uri.fromFile(f);
 
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/html");
+        intent.setType("message/rfc822");
+
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hastrixautomation123@gmail.com"});
         intent.putExtra(Intent.EXTRA_SUBJECT, "order");
-        intent.putExtra(Intent.EXTRA_TEXT, text);
+        intent.putExtra(Intent.EXTRA_STREAM ,URI );
+
 
         startActivity(Intent.createChooser(intent, "Send Email"));
-        //Intent in = new Intent(this , order.class);
-        //startActivity(in); */
-
-        /*com.itextpdf.text.Document document = new com.itextpdf.text.Document();
-
-        try {
-            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/vindroid";
-
-            File dir = new File(path);
-            if(!dir.exists()) {
-                dir.mkdir();
-            }
-
-            Log.d("PDFCreator", "PDF Path: " + path);
-
-
-            File file = new File(dir, "sample.pdf");
-            FileOutputStream fOut = new FileOutputStream(file);
-
-            PdfWriter.getInstance(document, fOut);
-
-            //open the document
-            document.open();
-
-
-            Paragraph p1 = new Paragraph("Sample PDF CREATION USING IText");
-            Font paraFont= new Font(Font.FontFamily.COURIER);
-            p1.setAlignment(Paragraph.ALIGN_CENTER);
-            p1.setFont(paraFont);
-
-            //add paragraph to document
-            document.add(p1);
-
-            Paragraph p2 = new Paragraph("This is an example of a simple paragraph");
-            Font paraFont2= new Font(Font.FontFamily.COURIER,14.0f,0, CMYKColor.GREEN);
-            p2.setAlignment(Paragraph.ALIGN_CENTER);
-            p2.setFont(paraFont2);
-
-            document.add(p2);
-
-
-
-
-
-
-        } catch (DocumentException de) {
-            Log.e("PDFCreator", "DocumentException:" + de);
-        } catch (IOException e) {
-            Log.e("PDFCreator", "ioException:" + e);
-        }
-        finally
-        {
-            document.close();
-        }
-
-       /* View content = findViewById(R.id.lvMain);
-        content.draw(page.getCanvas());
-        document.finishPage(page); */
 
 
 
