@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 {
 
     ListView listView;
-    CustomListViewAdapter customListViewAdapter;
+    public static CustomListViewAdapter customListViewAdapter ;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference,mDatabaseReference1;
     private Firebase mRef;
@@ -70,8 +70,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     BaseColor myColor = WebColors.getRGBColor("#9E9E9E");
     BaseColor myColor1 = WebColors.getRGBColor("#757575");
     //ArrayList<Integer> total_costs;
-    public int[] total_costs ;
-    public int[] costs;
+    public static int[] total_costs ;
+    public static int[] costs;
     /*PdfDocument document = new PdfDocument();
     PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(100,100, 1).create();
     PdfDocument.Page page = document.startPage(pageInfo); */
@@ -137,7 +137,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 int num = parseInt(etQuantityDialog.getText().toString());
-                float newPrice = Float.parseFloat(etNewPriceDialog.getText().toString());
+                int newPrice;
+                if(etNewPriceDialog.getVisibility() == View.VISIBLE ) {
+                     newPrice = Integer.parseInt(etNewPriceDialog.getText().toString());
+                }
+                else {
+                    newPrice = 0;
+                }
                 if(num>0) {
                     tvQuantMsg.setVisibility(View.VISIBLE);
                     tvQuant.setVisibility(View.VISIBLE);
@@ -157,11 +163,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             String value = dataSnapshot.getValue(String.class);
                             Log.i("product cost",value);
                             int total_cost;
-                            total_cost = customListViewAdapter.list.get(index).getQuantity() * Integer.parseInt(value);
+                            int new_price  = customListViewAdapter.list.get(index).getNewPrice() ;
+                            if( new_price!= 0 &&  new_price > Integer.parseInt(value)) {
+
+                                costs[index] = new_price ;
+                                total_costs[index] = new_price*customListViewAdapter.list.get(index).getQuantity();
+                            }
+                            else {
+                                costs[index] = Integer.parseInt(value);
+                                total_cost = customListViewAdapter.list.get(index).getQuantity() * Integer.parseInt(value);
+                                total_costs[index]=total_cost;
+
+                            }
+                            /*total_cost = customListViewAdapter.list.get(index).getQuantity() * Integer.parseInt(value);
                             Log.i("product total cost of "+customListViewAdapter.list.get(index).getProductName(),Integer.toString(total_cost));
                             total_costs[index]=total_cost;
                             costs[index] = Integer.parseInt(value);
-                            Log.i("Array value 1",Integer.toString(total_costs[index]));
+                            Log.i("Array value 1",Integer.toString(total_costs[index])); */
                         }
 
                         @Override
@@ -197,9 +215,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     etNewPriceDialog.setVisibility(View.VISIBLE);
                     etNewPriceDialog.setText("");
                 }
+                else if(i.isChecked()==false) {
+                    etNewPriceDialog.setVisibility(View.INVISIBLE);
+                    tvQuant.setText(String.valueOf(0));
+                    customListViewAdapter.list.get(index).setQuantity(0);
+                    customListViewAdapter.list.get(index).setNewPrice(0);
+                    
+
+                }
                 else{
                     etNewPriceDialog.setVisibility(View.INVISIBLE);
                 }
+
 
             }
         });
@@ -457,7 +484,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             e.printStackTrace();
         }
 
-        for(int i=0;i<customListViewAdapter.productNames.length;i++) {
+        /*for(int i=0;i<customListViewAdapter.productNames.length;i++) {
             final int quantity;
 
             String str = customListViewAdapter.list.get(i).getProductName() + "    " +customListViewAdapter.list.get(i).getQuantity();
@@ -468,6 +495,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
         }
+
+        */
         File f = new File(outPath);
         Uri URI = Uri.fromFile(f);
 

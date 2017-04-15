@@ -14,32 +14,32 @@ import android.widget.Toast;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+
 
 public class CustInfoActivity extends AppCompatActivity {
 
     EditText etCName,etCNumber,etCEmail;
     Boolean validation = true;
+
+    private PdfPCell cell;
+    private Image bgImage;
+    MainActivity mainActivity;
+    BaseColor myColor = WebColors.getRGBColor("#9E9E9E");
+    BaseColor myColor1 = WebColors.getRGBColor("#757575");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cust_info);
-
         etCName = (EditText) findViewById(R.id.etCName);
         etCNumber = (EditText) findViewById(R.id.etCNumber);
         etCEmail = (EditText) findViewById(R.id.etCEmail);
+
 
 
 
@@ -84,7 +84,9 @@ public class CustInfoActivity extends AppCompatActivity {
         if(validation == true)
         {
             // TODO: 09-04-2017  here add placeOrder methods implementation
+
             Toast.makeText(getApplicationContext(), "All OK", Toast.LENGTH_SHORT).show();
+
 
             //TODO: 15/04/2017  here is the new code for pdf , plz see and modify to get selected device and quantity
 
@@ -292,10 +294,9 @@ public class CustInfoActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
-
+            
         }
+
 
     }
 

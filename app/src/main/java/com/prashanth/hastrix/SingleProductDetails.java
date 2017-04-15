@@ -11,15 +11,15 @@ public class SingleProductDetails {
     private float price;
 
 
-    public float getNewPrice() {
+    public int getNewPrice() {
         return newPrice;
     }
 
-    public void setNewPrice(float newPrice) {
+    public void setNewPrice(int newPrice) {
         this.newPrice = newPrice;
     }
 
-    private float newPrice;
+    private int newPrice;
 
 
 
