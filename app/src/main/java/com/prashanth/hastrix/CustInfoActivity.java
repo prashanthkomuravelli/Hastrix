@@ -14,22 +14,13 @@ import android.widget.Toast;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.html.WebColors;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
+
 
 public class CustInfoActivity extends AppCompatActivity {
 
@@ -90,195 +81,220 @@ public class CustInfoActivity extends AppCompatActivity {
             }
         }
 
-        if(validation == true){
+        if(validation == true)
+        {
             // TODO: 09-04-2017  here add placeOrder methods implementation
 
             Toast.makeText(getApplicationContext(), "All OK", Toast.LENGTH_SHORT).show();
 
-            String text = " ";
 
-            Document doc= new Document() ;
-            String outPath = Environment.getExternalStorageDirectory() + "/mypdf.pdf" ;
-            long total=0;
+            //TODO: 15/04/2017  here is the new code for pdf , plz see and modify to get selected device and quantity
+
+
+            float total = 10000f;
+            String CustomerName = "Satyam";
+            String CustomerContact = "...";
+            String CustomerEmail ="...";
+            String BDAUserName ="....";
+            String address = "IInd Floor,B-C Junction," +
+                    "Business Incubation Center,SMVDU Jammu,J&K-182320\n" +
+                    "Website: www.hastrix.com\nE-mail: contact@hastrix.com";
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            String date = sdf.format(Calendar.getInstance().getTime());
+            Document doc = new Document();
+
+
             try {
+
+                //Tried creating particular folder for hastrix and save pdf name as CustomerName+Date
+                //But didn't work ,see if you can
+
+                String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Hastrix/PDFs";
+                File hastrixFolder = new File(path);
+                if(!hastrixFolder.exists()){
+                    hastrixFolder.mkdirs();
+                }
+
+                String pdfName = CustomerName+date;
+                Toast.makeText(getApplicationContext(),pdfName,Toast.LENGTH_SHORT).show();
+                File myPdf = new File(pdfName);
+                String outPath = Environment.getExternalStorageDirectory()+"/Hastrix/PDFs/newpdf.pdf";
+                //String outPath2 = outPath+".pdf";
+
+
                 PdfWriter.getInstance(doc,new FileOutputStream(outPath));
                 doc.open();
-                PdfPTable pt = new PdfPTable(2);
-                pt.setWidthPercentage(100);
-                float[] fl = new float[]{20, 80};
-                pt.setWidths(fl);
-                cell = new PdfPCell();
-                cell.setBorder(Rectangle.NO_BORDER);
-                Drawable myImage = CustInfoActivity.this.getResources().getDrawable(R.drawable.logo2);
-                Bitmap bitmap = ((BitmapDrawable) myImage).getBitmap();
+
+
+
+                Font whitefont = new Font();
+                whitefont.setColor(BaseColor.WHITE);
+
+                PdfPTable headTable = new PdfPTable(3);
+                float[] columnWidth = new float[]{15,80,15};
+                headTable.setWidths(columnWidth);
+                headTable.setWidthPercentage(100);
+                headTable.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+                BaseColor mygreen = new BaseColor(0,153,76);
+                PdfPCell headCell = new PdfPCell();
+                headCell.setColspan(3);
+                headCell.setMinimumHeight(80f);
+                headCell.setBackgroundColor(mygreen);
+
+
+                Paragraph addressPara = new Paragraph(address,whitefont);
+                addressPara.setAlignment(Element.ALIGN_CENTER);
+
+                Drawable image = this.getResources().getDrawable(R.drawable.hastrix2);
+                Bitmap bitmap = ((BitmapDrawable) image).getBitmap();
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] bitmapdata = stream.toByteArray();
-                bgImage = Image.getInstance(bitmapdata);
-                bgImage.setAbsolutePosition(330f, 642f);
-                cell.addElement(bgImage);
-                pt.addCell(cell);
-                cell = new PdfPCell();
-                cell.setBorder(Rectangle.NO_BORDER);
-                cell.addElement(new Paragraph("Hastrix Automation"));
-                cell.addElement(new Paragraph(""));
-                cell.addElement(new Paragraph(""));
-                pt.addCell(cell);
-            /*cell = new PdfPCell(new Paragraph(""));
-            cell.setBorder(Rectangle.NO_BORDER);
-            pt.addCell(cell); */
-
-                PdfPTable pTable = new PdfPTable(1);
-                pTable.setWidthPercentage(100);
-                cell = new PdfPCell();
-                cell.setColspan(1);
-                cell.addElement(pt);
-                pTable.addCell(cell);
-                PdfPTable table = new PdfPTable(5);
-
-                float[] columnWidth = new float[]{15,40,15,15,15};
-                table.setWidths(columnWidth);
+                Image logo = Image.getInstance(bitmapdata);
+                logo.setAlignment(Element.ALIGN_CENTER);
+                logo.setWidthPercentage(50);
 
 
-                cell = new PdfPCell();
+                headCell.addElement(logo);
+                headCell.addElement(addressPara);
+                headCell.setPadding(20);
+                headTable.addCell(headCell);
 
+                PdfPCell dateCell = new PdfPCell(new Paragraph("Date: "+date));
+                dateCell.setColspan(3);
+                dateCell.setPadding(5);
+                headTable.addCell(dateCell);
 
-                cell.setBackgroundColor(myColor);
-                cell.setColspan(4);
-                cell.addElement(pTable);
-                table.addCell(cell);
-                cell = new PdfPCell(new Phrase(" "));
-                cell.setColspan(4);
-                table.addCell(cell);
-                cell = new PdfPCell();
-                cell.setColspan(4);
+                PdfPCell CustomerNameCell = new PdfPCell(new Paragraph("Customer Name: "+CustomerName));
+                CustomerNameCell.setPadding(5);
+                CustomerNameCell.setColspan(3);
+                headTable.addCell(CustomerNameCell);
 
-                cell.setBackgroundColor(myColor1);
+                PdfPCell CustomerContactCell = new PdfPCell(new Paragraph("Customer Contact:"+CustomerContact));
+                CustomerContactCell.setColspan(3);
+                CustomerContactCell.setPadding(5);
+                headTable.addCell(CustomerContactCell);
 
-                cell = new PdfPCell(new Phrase("#"));
-                cell.setBackgroundColor(myColor1);
-                table.addCell(cell);
-                cell = new PdfPCell(new Phrase("Product Name"));
-                cell.setBackgroundColor(myColor1);
-                table.addCell(cell);
-                cell = new PdfPCell(new Phrase("Quantity"));
-                cell.setBackgroundColor(myColor1);
-                table.addCell(cell);
-                cell = new PdfPCell(new Phrase("Price per item"));
-                cell.setBackgroundColor(myColor1);
-                table.addCell(cell);
-                cell = new PdfPCell(new Phrase("Price"));
-                cell.setBackgroundColor(myColor1);
-                table.addCell(cell);
+                PdfPCell CustomerEmailCell = new PdfPCell(new Paragraph("Customer Email: "+CustomerEmail));
+                CustomerEmailCell.setColspan(3);
+                CustomerEmailCell.setPadding(5);
+                headTable.addCell(CustomerEmailCell);
 
-                //table.setHeaderRows(3);
-                cell = new PdfPCell();
-                cell.setColspan(5);
-                int sn=1;
+                PdfPCell BDACell = new PdfPCell(new Paragraph("BDA Username: "+BDAUserName));
+                BDACell.setColspan(3);
+                BDACell.setPadding(5);
+                headTable.addCell(BDACell);
 
-           /* for (int i = 1; i <= 10; i++) {
-                table.addCell(String.valueOf(i));
-                table.addCell("Header 1 row " + i);
-                table.addCell("Header 2 row " + i);
-                table.addCell("Header 3 row " + i);
-                table.addCell("Header 4 row " + i);
-                table.addCell("Header 5 row " + i);
+                Font redboldfont = new Font();
+                redboldfont.setSize(10);
+                redboldfont.setColor(BaseColor.RED);
+                redboldfont.setStyle(Font.BOLD);
 
-            } */
+                Paragraph paragraph = new Paragraph("S.No", redboldfont);
+                PdfPCell cell = new PdfPCell(paragraph);
+                cell.setPadding(5);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                headTable.addCell(cell);
 
-                for(int i=0;i<mainActivity.customListViewAdapter.productNames.length;i++) {
-                    if(mainActivity.customListViewAdapter.list.get(i).getQuantity()!=0) {
-                        table.addCell(String.valueOf(sn));
-                        table.addCell(mainActivity.customListViewAdapter.list.get(i).getProductName());
-                        table.addCell(Integer.toString(mainActivity.customListViewAdapter.list.get(i).getQuantity()));
-                        table.addCell(Integer.toString(mainActivity.costs[i]));
-                        table.addCell(Integer.toString(mainActivity.total_costs[i]));
-                        total=total+mainActivity.total_costs[i];
-                        sn+=1;
-                    }
-                /*String str = customListViewAdapter.list.get(i).getProductName() + "  " +customListViewAdapter.list.get(i).getQuantity();
-                doc.add(new Paragraph(str+Integer.toString(total_costs[i]))); */
+                paragraph = new Paragraph("Device", redboldfont);
+                cell = new PdfPCell(paragraph);
+                cell.setPadding(5);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                headTable.addCell(cell);
+
+                paragraph = new Paragraph("Quantity", redboldfont);
+                cell = new PdfPCell(paragraph);
+                cell.setPadding(5);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                headTable.addCell(cell);
+
+                //start
+/*
+            int sn=1;
+
+            for(int i=0;i<mainActivity.customListViewAdapter.productNames.length;i++) {
+                if(mainActivity.customListViewAdapter.list.get(i).getQuantity()!=0) {
+                    table.addCell(String.valueOf(sn));
+                    table.addCell(mainActivity.customListViewAdapter.list.get(i).getProductName());
+                    table.addCell(Integer.toString(mainActivity.customListViewAdapter.list.get(i).getQuantity()));
+                    total=total+mainActivity.total_costs[i];
+                    sn+=1;
                 }
 
-                PdfPTable ftable = new PdfPTable(5);
-                ftable.setWidthPercentage(100);
-                float[] columnWidthaa = new float[]{15,40,15,15,15};
-                ftable.setWidths(columnWidthaa);
-                cell = new PdfPCell();
-                cell.setColspan(5);
-                cell.setBackgroundColor(myColor1);
-                cell = new PdfPCell(new Phrase("Total cost" ));
-                cell.setBorder(Rectangle.NO_BORDER);
-                cell.setBackgroundColor(myColor1);
-                ftable.addCell(cell);
-                cell = new PdfPCell(new Phrase(""));
-                cell.setBorder(Rectangle.NO_BORDER);
-                cell.setBackgroundColor(myColor1);
-                ftable.addCell(cell);
-                cell = new PdfPCell(new Phrase(""));
-                cell.setBorder(Rectangle.NO_BORDER);
-                cell.setBackgroundColor(myColor1);
-                ftable.addCell(cell);
-                cell = new PdfPCell(new Phrase(""));
-                cell.setBorder(Rectangle.NO_BORDER);
-                cell.setBackgroundColor(myColor1);
-                ftable.addCell(cell);
-                cell = new PdfPCell(new Phrase( String.valueOf(total)));
-                cell.setBorder(Rectangle.NO_BORDER);
-                cell.setBackgroundColor(myColor1);
-                ftable.addCell(cell);
-            /*cell = new PdfPCell(new Phrase(""));
-            cell.setBorder(Rectangle.NO_BORDER);
-            cell.setBackgroundColor(myColor1);
-            ftable.addCell(cell); */
-                cell = new PdfPCell(new Paragraph("Footer"));
-                cell.setColspan(5);
-                ftable.addCell(cell);
-                cell = new PdfPCell();
-                cell.setColspan(5);
-                cell.addElement(ftable);
-                table.addCell(cell);
-                doc.add(table);
+            }
+ */           //end
+                Font blueboldfont = new Font();
+                blueboldfont.setSize(15);
+                blueboldfont.setColor(BaseColor.BLUE);
+                blueboldfont.setStyle(Font.BOLD);
 
+                paragraph = new Paragraph("Total Cost:");
+                PdfPCell totalCostCell = new PdfPCell(paragraph);
+                totalCostCell.setColspan(2);
+                totalCostCell.setPadding(5);
+                totalCostCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                headTable.addCell(totalCostCell);
 
+                paragraph = new Paragraph(String.valueOf(total),blueboldfont);
+                totalCostCell.setBackgroundColor(BaseColor.GREEN);
+                totalCostCell = new PdfPCell(paragraph);
+                totalCostCell.setPadding(5);
+                totalCostCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                headTable.addCell(totalCostCell);
 
+                Paragraph tandcmsg = new Paragraph("* approximate cost is not inclusive of" +
+                        "any VAT or any other charges");
+                PdfPCell tandcCell = new PdfPCell(tandcmsg);
+                tandcCell.setColspan(3);
+                tandcCell.setPadding(3);
+                headTable.addCell(tandcCell);
+
+                tandcmsg = new Paragraph("Terms of Payment:- 1) 80% of project cost as advance payment");
+                tandcCell = new PdfPCell(tandcmsg);
+                tandcCell.setColspan(3);
+                tandcCell.setPadding(3);
+                headTable.addCell(tandcCell);
+
+                tandcmsg = new Paragraph("                   2) The above quote is an estimate may vary on actual requirements");
+                tandcCell = new PdfPCell(tandcmsg);
+                tandcCell.setColspan(3);
+                tandcCell.setPadding(3);
+                headTable.addCell(tandcCell);
+
+                tandcmsg = new Paragraph("Services:-         1) 12 months warranty against manufacturing defects");
+                tandcCell = new PdfPCell(tandcmsg);
+                tandcCell.setColspan(3);
+                tandcCell.setPadding(3);
+                headTable.addCell(tandcCell);
+
+                tandcmsg = new Paragraph("                   2) Site supervision,customer training and re-programming for a week after installation");
+                tandcCell = new PdfPCell(tandcmsg);
+                tandcCell.setColspan(3);
+                tandcCell.setPadding(3);
+                headTable.addCell(tandcCell);
+
+                doc.add(headTable);
                 doc.close();
-                Toast.makeText(this, "pdf created", Toast.LENGTH_SHORT).show();
-            } catch (DocumentException e) {
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+
+                File f = new File(outPath);
+                Uri URI = Uri.fromFile(f);
+
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("message/rfc822");
+
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hastrixautomation123@gmail.com",etCEmail.getText().toString()});
+                intent.putExtra(Intent.EXTRA_SUBJECT, "order");
+                intent.putExtra(Intent.EXTRA_STREAM ,URI );
+
+
+                startActivity(Intent.createChooser(intent, "Send Email"));
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            /*for(int i=0;i<customListViewAdapter1.productNames.length;i++) {
-                final int quantity;
-
-                String str = customListViewAdapter1.list.get(i).getProductName() + "    " +customListViewAdapter1.list.get(i).getQuantity();
-
-                quantity = customListViewAdapter1.list.get(i).getQuantity();
-
-                text=text +"\n" + str+ " " +mainActivity.total_costs[i];
-
-
-            } */
-            File f = new File(outPath);
-            Uri URI = Uri.fromFile(f);
-
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("message/rfc822");
-
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hastrixautomation123@gmail.com",etCEmail.getText().toString()});
-            intent.putExtra(Intent.EXTRA_SUBJECT, "order");
-            intent.putExtra(Intent.EXTRA_STREAM ,URI );
-
-
-            startActivity(Intent.createChooser(intent, "Send Email"));
-
-
+            
         }
 
 
