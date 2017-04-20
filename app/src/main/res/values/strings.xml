@@ -34,6 +34,9 @@
     <string name="lbl_forgot_password">Forgot password?</string>
     <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
     <string name="signout">SIGNOUT</string>
+    <string name="msg">please enable all permission</string>
+    <string name="message">select atleast one item</string>
+    <string name="exit_message">Press Back again to exit</string>
 
     <string-array name="ProductNames">
         <item>APP Based Control System</item>

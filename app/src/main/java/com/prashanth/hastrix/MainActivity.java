@@ -8,7 +8,9 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -52,6 +54,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.jar.Manifest;
 
 import static java.lang.Integer.parseInt;
 
@@ -80,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private File dir;
     private File file;
     private PdfPCell cell;
+    private static final int REQUEST_PERMISSION = 10;
+    boolean  doubleBackToExitPressedOnce = false;
 
 
 
@@ -114,7 +119,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        //requestAppPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},R.string.msg,REQUEST_PERMISSION);
+
     }
+
+   /* @Override
+    public void onPermissionsGranted(int requestCode) {
+        Toast.makeText(getApplicationContext(),"permission granted",Toast.LENGTH_LONG).show();
+    } */
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View v, final int index, long l) {
@@ -136,10 +148,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         builder.setView(view).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                int num = parseInt(etQuantityDialog.getText().toString());
+                int num;
+                if(etQuantityDialog.getText().toString().equals("")) {
+                    num=0;
+                }
+                else {
+                    num = parseInt(etQuantityDialog.getText().toString());
+                }
                 int newPrice;
                 if(etNewPriceDialog.getVisibility() == View.VISIBLE ) {
-                     newPrice = Integer.parseInt(etNewPriceDialog.getText().toString());
+                    if(etNewPriceDialog.getText().toString().equals(null)) {
+                        newPrice = Integer.parseInt(etNewPriceDialog.getText().toString());
+                    }
+                    else{
+                        newPrice = 0;
+                    }
                 }
                 else {
                     newPrice = 0;
@@ -199,10 +222,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 tvQuant.setText(String.valueOf(0));
                 customListViewAdapter.list.get(index).setQuantity(0);
                 customListViewAdapter.list.get(index).setNewPrice(0);
-                Toast.makeText(getApplicationContext(), String.valueOf(customListViewAdapter.list.get(index).getNewPrice()), Toast.LENGTH_SHORT).show();
             }
         });
-        Log.i("Array value",Integer.toString(total_costs[index]));
         tvPnameDialog.setText(customListViewAdapter.list.get(index).getProductName());
         etQuantityDialog.setText("0");
         etNewPriceDialog.setText("0");
@@ -262,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
    
 
 
-    @Override
+   /* @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -270,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         } else {
             super.onBackPressed();
         }
-    }
+    } */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -303,17 +324,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        if (id == R.id.nav_contact) {
+            Intent in = new Intent(this,ContactUs.class);
+            startActivity(in);
 
         }
 
@@ -516,8 +529,56 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     public void goToCustActivity(View view){
-        Intent custInfoIntent = new Intent(getApplicationContext(),CustInfoActivity.class);
-        startActivity(custInfoIntent);
+        if(count()==0){
+            Toaster.show(findViewById(android.R.id.content) , getString(R.string.message));
+        }
+        else {
+            Intent custInfoIntent = new Intent(getApplicationContext(), CustInfoActivity.class);
+            startActivity(custInfoIntent);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    public int count() {
+        int cn=0;
+        for(int i=0;i<customListViewAdapter.productNames.length;i++) {
+            if(customListViewAdapter.list.get(i).getQuantity()!=0) {
+                cn+=1;
+            }
+        }
+        Log.i("count",Integer.toString(cn));
+        return cn;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            if (doubleBackToExitPressedOnce ) {
+                AuthUI.getInstance().signOut(this);
+                MainActivity.this.finish();
+                return;
+
+            }
+            this.doubleBackToExitPressedOnce = true;
+            Toaster.show(findViewById(android.R.id.content) , getString(R.string.exit_message));
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        }
+
+
     }
 
 }

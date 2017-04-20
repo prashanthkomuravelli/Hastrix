@@ -97,6 +97,19 @@
             android:textStyle="bold"
             android:ems="10"
             android:inputType="textEmailAddress" />
+        <CheckBox
+            android:id="@+id/dis"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="34dp"
+            android:text="Discount"
+            android:textColor="#c62828"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_below="@+id/etCEmail"
+            android:layout_marginLeft="23dp"
+            android:layout_marginStart="23dp" />
+
         <TextView
             android:id="@+id/tvMsg"
             android:layout_width="match_parent"
@@ -114,8 +127,8 @@
             android:id="@+id/btnCSubmit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/etCEmail"
-            android:onClick="runGmailIntent"
+            android:layout_below="@+id/dis"
+            android:onClick="permissions"
             android:text="Submit"
             android:background="#000"
             android:textSize="18dp"

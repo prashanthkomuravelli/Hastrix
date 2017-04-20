@@ -13,7 +13,7 @@
         android:fontFamily="serif"
         android:gravity="left"
         android:text="productName"
-        android:textColor="#000"
+        android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -25,7 +25,7 @@
         android:layout_margin="10dp"
         android:gravity="left"
         android:text="Quantity Selected :"
-        android:textColor="#000"
+        android:textColor="@color/white"
         android:textSize="15sp"
         android:textStyle="bold"
         android:visibility="visible" />

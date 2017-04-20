@@ -1,35 +1,60 @@
 package com.prashanth.hastrix;
 
+import android.*;
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.html.WebColors;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 
 public class CustInfoActivity extends AppCompatActivity {
 
     EditText etCName,etCNumber,etCEmail;
     Boolean validation = true;
+    CheckBox cbdis;
 
     private PdfPCell cell;
     private Image bgImage;
     MainActivity mainActivity;
+    LoginActivity loginActivity;
+    private SharedPreferences permissionStatus;
+    private boolean sentToSettings = false;
+    private static final int EXTERNAL_STORAGE_PERMISSION_CONSTANT = 10;
+    private static final int REQUEST_PERMISSION_SETTING = 101;
     BaseColor myColor = WebColors.getRGBColor("#9E9E9E");
     BaseColor myColor1 = WebColors.getRGBColor("#757575");
     @Override
@@ -39,7 +64,9 @@ public class CustInfoActivity extends AppCompatActivity {
         etCName = (EditText) findViewById(R.id.etCName);
         etCNumber = (EditText) findViewById(R.id.etCNumber);
         etCEmail = (EditText) findViewById(R.id.etCEmail);
-
+        cbdis = (CheckBox) findViewById(R.id.dis);
+        permissionStatus = getSharedPreferences("permissionStatus",MODE_PRIVATE);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
 
@@ -52,16 +79,129 @@ public class CustInfoActivity extends AppCompatActivity {
             return true;
     }
     private boolean isValidMobile(String phone) {
-        if(phone.length()>10)
+        if(phone.length()!=10)
             return false;
         return android.util.Patterns.PHONE.matcher(phone).matches();
     }
     private boolean isValidMail(String email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
+    public void permissions(View view) {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(CustInfoActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                //Show Information about why you need the permission
+                AlertDialog.Builder builder = new AlertDialog.Builder(CustInfoActivity.this);
+                builder.setTitle("Need Storage Permission");
+                builder.setMessage("This app needs storage permission.");
+                builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        ActivityCompat.requestPermissions(CustInfoActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXTERNAL_STORAGE_PERMISSION_CONSTANT);
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
+            } else if (permissionStatus.getBoolean(Manifest.permission.WRITE_EXTERNAL_STORAGE,false)) {
+                //Previously Permission Request was cancelled with 'Dont Ask Again',
+                // Redirect to Settings after showing Information about why you need the permission
+                AlertDialog.Builder builder = new AlertDialog.Builder(CustInfoActivity.this);
+                builder.setTitle("Need Storage Permission");
+                builder.setMessage("This app needs storage permission.");
+                builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        sentToSettings = true;
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
+                        Toast.makeText(getBaseContext(), "Go to Permissions to Grant Storage", Toast.LENGTH_LONG).show();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
+            } else {
+                //just request the permission
+                ActivityCompat.requestPermissions(CustInfoActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXTERNAL_STORAGE_PERMISSION_CONSTANT);
+            }
+
+            SharedPreferences.Editor editor = permissionStatus.edit();
+            editor.putBoolean(Manifest.permission.WRITE_EXTERNAL_STORAGE,true);
+            editor.commit();
 
 
-    public void runGmailIntent(View view){
+        } else {
+            //You already have the permission, just go ahead.
+            proceedAfterPermission();
+        }
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // app icon in action bar clicked; goto parent activity.
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    private void proceedAfterPermission() {
+        //We've got the permission, now we can proceed further
+        runGmailIntent();
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 10) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //The External Storage Write Permission is granted to you... Continue your left job...
+                proceedAfterPermission();
+            } else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(CustInfoActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    //Show Information about why you need the permission
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CustInfoActivity.this);
+                    builder.setTitle("Need Storage Permission");
+                    builder.setMessage("This app needs storage permission");
+                    builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+
+
+                            ActivityCompat.requestPermissions(CustInfoActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 10);
+
+
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.show();
+                } else {
+                    Toast.makeText(getBaseContext(),"Unable to get Permission",Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+
+
+    public void runGmailIntent(){
         if (isValidName(etCName.getText().toString()) == false) {
             Toast.makeText(getApplicationContext(), "Enter Valid Name", Toast.LENGTH_SHORT).show();
             validation = false;
@@ -85,17 +225,17 @@ public class CustInfoActivity extends AppCompatActivity {
         {
             // TODO: 09-04-2017  here add placeOrder methods implementation
 
-            Toast.makeText(getApplicationContext(), "All OK", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Just send through Gmail.. ", Toast.LENGTH_SHORT).show();
 
 
             //TODO: 15/04/2017  here is the new code for pdf , plz see and modify to get selected device and quantity
 
 
-            float total = 10000f;
-            String CustomerName = "Satyam";
-            String CustomerContact = "...";
-            String CustomerEmail ="...";
-            String BDAUserName ="....";
+            float total = 0f;
+            String CustomerName = etCName.getText().toString();
+            String CustomerContact = etCNumber.getText().toString();
+            String CustomerEmail =etCEmail.getText().toString();
+            String BDAUserName =loginActivity.username;
             String address = "IInd Floor,B-C Junction," +
                     "Business Incubation Center,SMVDU Jammu,J&K-182320\n" +
                     "Website: www.hastrix.com\nE-mail: contact@hastrix.com";
@@ -103,6 +243,8 @@ public class CustInfoActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             String date = sdf.format(Calendar.getInstance().getTime());
             Document doc = new Document();
+            float dis = 0f;
+            float install_cost = 0f;
 
 
             try {
@@ -117,7 +259,6 @@ public class CustInfoActivity extends AppCompatActivity {
                 }
 
                 String pdfName = CustomerName+date;
-                Toast.makeText(getApplicationContext(),pdfName,Toast.LENGTH_SHORT).show();
                 File myPdf = new File(pdfName);
                 String outPath = Environment.getExternalStorageDirectory()+"/Hastrix/PDFs/newpdf.pdf";
                 //String outPath2 = outPath+".pdf";
@@ -211,24 +352,59 @@ public class CustInfoActivity extends AppCompatActivity {
                 headTable.addCell(cell);
 
                 //start
-/*
+
             int sn=1;
 
             for(int i=0;i<mainActivity.customListViewAdapter.productNames.length;i++) {
                 if(mainActivity.customListViewAdapter.list.get(i).getQuantity()!=0) {
-                    table.addCell(String.valueOf(sn));
-                    table.addCell(mainActivity.customListViewAdapter.list.get(i).getProductName());
-                    table.addCell(Integer.toString(mainActivity.customListViewAdapter.list.get(i).getQuantity()));
+                    headTable.addCell(String.valueOf(sn));
+                    headTable.addCell(mainActivity.customListViewAdapter.list.get(i).getProductName());
+                    headTable.addCell(Integer.toString(mainActivity.customListViewAdapter.list.get(i).getQuantity()));
                     total=total+mainActivity.total_costs[i];
                     sn+=1;
                 }
 
             }
- */           //end
+            install_cost = total*20/100;
+
+            if(cbdis.isChecked()) {
+                dis = total * 10/100;
+            }
+
                 Font blueboldfont = new Font();
-                blueboldfont.setSize(15);
+                blueboldfont.setSize(12);
                 blueboldfont.setColor(BaseColor.BLUE);
                 blueboldfont.setStyle(Font.BOLD);
+
+                paragraph = new Paragraph("Installation cost:");
+                PdfPCell installationCost = new PdfPCell(paragraph);
+                installationCost.setColspan(2);
+                installationCost.setPadding(5);
+                installationCost.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                headTable.addCell(installationCost);
+
+                paragraph = new Paragraph(String.valueOf(install_cost));
+                installationCost.setBackgroundColor(BaseColor.GREEN);
+                installationCost = new PdfPCell(paragraph);
+                installationCost.setPadding(5);
+                installationCost.setHorizontalAlignment(Element.ALIGN_CENTER);
+                headTable.addCell(installationCost);
+
+                paragraph = new Paragraph("Discount:");
+                PdfPCell Discount = new PdfPCell(paragraph);
+                Discount.setColspan(2);
+                Discount.setPadding(5);
+                Discount.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                headTable.addCell(Discount);
+
+                paragraph = new Paragraph(String.valueOf(dis));
+                Discount.setBackgroundColor(BaseColor.GREEN);
+                Discount = new PdfPCell(paragraph);
+                Discount.setPadding(5);
+                Discount.setHorizontalAlignment(Element.ALIGN_CENTER);
+                headTable.addCell(Discount);
+
+
 
                 paragraph = new Paragraph("Total Cost:");
                 PdfPCell totalCostCell = new PdfPCell(paragraph);
@@ -237,7 +413,7 @@ public class CustInfoActivity extends AppCompatActivity {
                 totalCostCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
                 headTable.addCell(totalCostCell);
 
-                paragraph = new Paragraph(String.valueOf(total),blueboldfont);
+                paragraph = new Paragraph(String.valueOf(total + install_cost -dis),blueboldfont);
                 totalCostCell.setBackgroundColor(BaseColor.GREEN);
                 totalCostCell = new PdfPCell(paragraph);
                 totalCostCell.setPadding(5);

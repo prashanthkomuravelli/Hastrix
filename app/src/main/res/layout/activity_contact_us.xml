@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context="com.prashanth.hastrix.ContactUs">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="For any Queries Please contact below :"
+            android:textSize="25dp"
+            android:textColor="@color/colorAccent"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phone"
+            android:textSize="30dp"
+            android:textColor="@color/colorAccent"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            />
+        <TextView
+            android:id="@+id/ph1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+919797519217"
+            android:textSize="20dp"
+            android:textColor="@color/com_facebook_blue"
+            android:clickable="true"
+            android:onClick="dial1"
+            android:layout_margin="10dp"
+            />
+        <TextView
+            android:id="@+id/ph2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+919906022823"
+            android:textSize="20dp"
+            android:textColor="@color/com_facebook_blue"
+            android:clickable="true"
+            android:onClick="dial2"
+            android:layout_margin="10dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            android:textSize="30dp"
+            android:textColor="@color/colorAccent"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"/>
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="contact@hastrix.com"
+            android:textSize="20dp"
+            android:textColor="@color/com_facebook_blue"
+            android:clickable="true"
+            android:onClick="mail"
+            android:layout_margin="10dp"/>
+
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

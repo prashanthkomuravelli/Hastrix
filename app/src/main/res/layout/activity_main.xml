@@ -24,26 +24,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    tools:openDrawer="start"
+    >
 
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="vertical">
+      android:orientation="vertical"
+      >
 
-      <include layout="@layout/app_bar_main"/>
+      <include layout="@layout/app_bar_main" />
       <Button
           android:id="@+id/button2"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Button"
-          android:onClick="goToCustActivity"/>
+          android:text="Make Order"
+          android:textColor="@color/colorPrimary"
+          android:onClick="goToCustActivity"
+          android:paddingTop="5dp"
+          android:paddingRight="15dp"
+          android:paddingLeft="15dp"
+          android:paddingBottom="5dp"
+          android:textSize="18dp"
+          android:background="#000"
+          android:layout_marginBottom="5dp"
+          android:layout_marginTop="5dp"
+          />
 
       <ListView
           android:id="@+id/lvMain"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content" />
-
+          android:layout_height="wrap_content"
+          />
 
   </LinearLayout>
 
