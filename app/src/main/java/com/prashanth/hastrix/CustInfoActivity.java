@@ -2,6 +2,7 @@ package com.prashanth.hastrix;
 
 import android.*;
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +20,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -87,6 +89,9 @@ public class CustInfoActivity extends AppCompatActivity {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
     public void permissions(View view) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(etCEmail.getWindowToken(), 0);
+
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(CustInfoActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 //Show Information about why you need the permission
@@ -376,7 +381,7 @@ public class CustInfoActivity extends AppCompatActivity {
                 blueboldfont.setColor(BaseColor.BLUE);
                 blueboldfont.setStyle(Font.BOLD);
 
-                paragraph = new Paragraph("Installation cost:");
+                paragraph = new Paragraph("Installation cost:(20% of total)");
                 PdfPCell installationCost = new PdfPCell(paragraph);
                 installationCost.setColspan(2);
                 installationCost.setPadding(5);
@@ -390,7 +395,7 @@ public class CustInfoActivity extends AppCompatActivity {
                 installationCost.setHorizontalAlignment(Element.ALIGN_CENTER);
                 headTable.addCell(installationCost);
 
-                paragraph = new Paragraph("Discount:");
+                paragraph = new Paragraph("Discount:(10% of total)");
                 PdfPCell Discount = new PdfPCell(paragraph);
                 Discount.setColspan(2);
                 Discount.setPadding(5);
