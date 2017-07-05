@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> adapterView, View v, final int index, long l) {
         final TextView tvQuant = (TextView) v.findViewById(R.id.tvQuantity);
-        final TextView tvQuantMsg = (TextView) v.findViewById(R.id.tvQuantMsg);
+       // final TextView tvQuantMsg = (TextView) v.findViewById(R.id.tvQuantMsg);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     newPrice = 0;
                 }
                 if(num>0) {
-                    tvQuantMsg.setVisibility(View.VISIBLE);
+                    //tvQuantMsg.setVisibility(View.VISIBLE);
                     tvQuant.setVisibility(View.VISIBLE);
                     tvQuant.setText(String.valueOf(num));
                     customListViewAdapter.list.get(index).setQuantity(num);

@@ -24,7 +24,7 @@ public class Toaster {
         TextView textView = (TextView) sbView.findViewById(android.support.design.R.id
                 .snackbar_text);
         textView.setTextColor(Color.WHITE);
-        textView.setTextSize(12);
+        textView.setTextSize(15);
         snackbar.setAction("OK", new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -55,12 +55,12 @@ public class CustomListViewAdapter extends BaseAdapter {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View row= layoutInflater.inflate(R.layout.singlerow_listview,viewGroup,false);
         TextView tvProductName = (TextView) row.findViewById(R.id.tvPname);
-        TextView tvQuantMsg = (TextView) row.findViewById(R.id.tvQuantMsg);
+        //TextView tvQuantMsg = (TextView) row.findViewById(R.id.tvQuantMsg);
         TextView tvQuantity = (TextView) row.findViewById(R.id.tvQuantity);
 
         SingleProductDetails temp = list.get(i);
         tvProductName.setText(temp.getProductName());
-        tvQuantMsg.setText(temp.getQuantityMsg());
+       // tvQuantMsg.setText(temp.getQuantityMsg());
         tvQuantity.setText(String.valueOf(temp.getQuantity()));
 
         return row;
